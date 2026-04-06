@@ -7,6 +7,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import csv
 import datetime
+import sys
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -67,7 +68,8 @@ def get_gsheet():
             return None
         return client.open_by_key(spreadsheet_id).sheet1
     except Exception as e:
-        print(f"Google Sheets connection error: {e}")
+        print(f"Google Sheets connection error: {e}", flush=True)
+        sys.stderr.write(f"SHEETS ERROR: {e}\n")
         return None
 
 def save_row(row):
@@ -76,8 +78,11 @@ def save_row(row):
         sheet = get_gsheet()
         if sheet:
             sheet.append_row(row, value_input_option='RAW')
+            print(f"Row saved to Google Sheets successfully", flush=True)
+        else:
+            print(f"WARNING: get_gsheet() returned None — no credentials or sheet ID configured", flush=True)
     except Exception as e:
-        print(f"Google Sheets error: {e}")
+        print(f"Google Sheets error: {e}", flush=True)
 
     try:
         csv_path = Config.CSV_FILE_PATH or os.path.join(os.path.dirname(__file__), 'transactions.csv')
@@ -324,6 +329,28 @@ def api_donate():
     save_row(row)
 
     return jsonify({'message': 'Donation received', 'amount': amount})
+
+@app.route('/api/test-sheets')
+def test_sheets():
+    """Diagnostic endpoint to test Google Sheets connection"""
+    creds_json = os.environ.get('GOOGLE_CREDENTIALS_JSON')
+    spreadsheet_id = os.environ.get('SPREADSHEET_ID', Config.SPREADSHEET_ID)
+    status = {
+        'GOOGLE_CREDENTIALS_JSON_set': bool(creds_json),
+        'GOOGLE_CREDENTIALS_JSON_length': len(creds_json) if creds_json else 0,
+        'SPREADSHEET_ID': spreadsheet_id,
+    }
+    try:
+        sheet = get_gsheet()
+        if sheet:
+            status['connection'] = 'SUCCESS'
+            status['sheet_title'] = sheet.title
+            status['row_count'] = sheet.row_count
+        else:
+            status['connection'] = 'FAILED — get_gsheet() returned None'
+    except Exception as e:
+        status['connection'] = f'ERROR: {e}'
+    return jsonify(status)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
