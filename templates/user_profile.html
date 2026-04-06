@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}My Profile — HavenBridge{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:40px; padding-bottom:60px; max-width:700px;">
+    <div class="profile-header">
+        <div class="avatar">{{ username[0]|upper if username else 'G' }}</div>
+        <div>
+            <h1 style="font-size:1.5rem;">{{ username }}</h1>
+            {% if email %}<p style="color:var(--muted); font-size:0.875rem;">{{ email }}</p>{% endif %}
+            <span class="badge badge-success" style="margin-top:6px;">Active Member</span>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+        <h3 style="margin-bottom:16px;">Account Details</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div>
+                <p style="font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;">Username</p>
+                <p style="font-weight:500;">{{ username }}</p>
+            </div>
+            {% if email %}
+            <div>
+                <p style="font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;">Email</p>
+                <p style="font-weight:500;">{{ email }}</p>
+            </div>
+            {% endif %}
+            <div>
+                <p style="font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;">Status</p>
+                <p style="font-weight:500; color:var(--success);">Subscribed</p>
+            </div>
+            {% if card_last4 %}
+            <div>
+                <p style="font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;">Payment Method</p>
+                <p style="font-weight:500;">&bull;&bull;&bull;&bull; {{ card_last4 }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if card_last4 %}
+    <div class="card" style="margin-bottom:24px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <h3>Payment Method</h3>
+            <button onclick="toggleCardForm()" class="btn btn-outline" style="padding:6px 16px; font-size:0.8125rem;" id="toggle-card-btn">Update Card</button>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:48px;height:32px;background:var(--navy);border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:0.7rem;font-weight:600;">CARD</div>
+            <div>
+                <p style="font-weight:500;">{{ card_holder }}</p>
+                <p style="font-size:0.8125rem; color:var(--muted);">Ending in {{ card_last4 }}</p>
+            </div>
+        </div>
+
+        <div id="card-form-area" style="display:none; margin-top:24px; padding-top:20px; border-top:1px solid var(--border);">
+            <div id="card-error" class="alert alert-error" style="display:none;"></div>
+            <div id="card-success" class="alert alert-success" style="display:none;"></div>
+            <form onsubmit="updateCard(event)">
+                <div class="form-group">
+                    <label for="new_card_holder">Name on Card</label>
+                    <input type="text" id="new_card_holder" class="form-input" required value="{{ card_holder }}">
+                </div>
+                <div class="form-group">
+                    <label for="new_card_number">Card Number</label>
+                    <input type="text" id="new_card_number" class="form-input" placeholder="1234 5678 9012 3456" required maxlength="19" oninput="formatCard(this)">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="new_expiry">Expiry</label>
+                        <input type="text" id="new_expiry" class="form-input" placeholder="MM/YY" required maxlength="5" oninput="formatExpiry(this)">
+                    </div>
+                    <div class="form-group">
+                        <label for="new_cvv">CVC</label>
+                        <input type="text" id="new_cvv" class="form-input" placeholder="123" required maxlength="4">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="update-card-btn">Save Card</button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <div style="display:flex; gap:12px;">
+        <a href="/home" class="btn btn-primary">Dashboard</a>
+        <a href="/chat" class="btn btn-outline">Community Chat</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleCardForm() {
+    const area = document.getElementById('card-form-area');
+    area.style.display = area.style.display === 'none' ? 'block' : 'none';
+}
+function formatCard(el) {
+    let v = el.value.replace(/\D/g, '').slice(0, 16);
+    el.value = v.replace(/(.{4})/g, '$1 ').trim();
+}
+function formatExpiry(el) {
+    let v = el.value.replace(/\D/g, '').slice(0, 4);
+    if (v.length >= 3) el.value = v.slice(0,2) + '/' + v.slice(2);
+    else el.value = v;
+}
+async function updateCard(e) {
+    e.preventDefault();
+    const errEl = document.getElementById('card-error');
+    const sucEl = document.getElementById('card-success');
+    const btn = document.getElementById('update-card-btn');
+    errEl.style.display = 'none';
+    sucEl.style.display = 'none';
+    btn.textContent = 'Saving...';
+    btn.disabled = true;
+
+    const res = await fetch('/update-card', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            card_number: document.getElementById('new_card_number').value.replace(/\s/g, ''),
+            card_holder_name: document.getElementById('new_card_holder').value,
+            expiration_date: document.getElementById('new_expiry').value,
+            cvv: document.getElementById('new_cvv').value
+        })
+    });
+    const data = await res.json();
+    btn.textContent = 'Save Card';
+    btn.disabled = false;
+    if (!res.ok) {
+        errEl.textContent = data.error;
+        errEl.style.display = 'block';
+        return;
+    }
+    sucEl.textContent = 'Card updated successfully!';
+    sucEl.style.display = 'block';
+    setTimeout(() => location.reload(), 1500);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Admin Login — HavenBridge{% endblock %}
+
+{% block content %}
+<div class="auth-layout">
+    <div class="auth-card card card-lg">
+        <h2>Admin Access</h2>
+        <p class="subtitle">Enter the admin password to continue.</p>
+
+        <div id="admin-error" class="alert alert-error" style="display:none;"></div>
+
+        <form onsubmit="adminLogin(event)">
+            <div class="form-group">
+                <label for="admin-pw">Password</label>
+                <input type="password" id="admin-pw" class="form-input" placeholder="Enter admin password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full btn-lg" id="admin-btn">Sign In</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function adminLogin(e) {
+    e.preventDefault();
+    const errEl = document.getElementById('admin-error');
+    const btn = document.getElementById('admin-btn');
+    errEl.style.display = 'none';
+    btn.textContent = 'Signing in...';
+    btn.disabled = true;
+
+    const res = await fetch('/admin/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ password: document.getElementById('admin-pw').value })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+        errEl.textContent = data.error;
+        errEl.style.display = 'block';
+        btn.textContent = 'Sign In';
+        btn.disabled = false;
+        return;
+    }
+    window.location.href = '/admin';
+}
+</script>
+{% endblock %}

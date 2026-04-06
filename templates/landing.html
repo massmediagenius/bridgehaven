@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+{% block title %}HavenBridge — Bridge Children to Safety{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <span class="badge badge-primary">Nonprofit &bull; 501(c)(3)</span>
+        <h1 style="margin-top: 16px;">Bridge Children to Safety</h1>
+        <p class="subtitle">Help children in foster care access safe, healthy, supportive homes and development resources. Vote on priorities and donate directly.</p>
+        <div class="hero-actions">
+            <a href="/signup" class="btn btn-primary btn-lg" id="btn-signup">Get Started</a>
+            <a href="/lilyfish" class="btn btn-outline btn-lg">Learn More</a>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">2,847</div>
+                <div class="stat-label">Children Supported</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">156</div>
+                <div class="stat-label">Licensed Homes Funded</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">$4.2M</div>
+                <div class="stat-label">Donations Delivered</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">89</div>
+                <div class="stat-label">Programs Sponsored</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background: white;">
+    <div class="container text-center">
+        <h2>How One Action Helps</h2>
+        <p class="subtitle">Every vote and donation directly impacts a child's life</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">&#128203;</div>
+                <h3>Sign Up</h3>
+                <p style="color: var(--muted); font-size: 0.9375rem; margin-top: 8px;">Create an account with a secure payment method to unlock voting access.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128077;</div>
+                <h3>Vote</h3>
+                <p style="color: var(--muted); font-size: 0.9375rem; margin-top: 8px;">Help prioritize which campaigns and homes get community visibility.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128154;</div>
+                <h3>Donate</h3>
+                <p style="color: var(--muted); font-size: 0.9375rem; margin-top: 8px;">Fund care, education, therapy, and enrichment for children directly.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Signup Modal -->
+<div id="signup-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center;">
+    <div class="card card-lg" style="max-width:460px; width:100%; margin:auto; position:relative;">
+        <button onclick="closeSignup()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.25rem;cursor:pointer;color:var(--muted);">&times;</button>
+
+        <!-- Step 1: Account -->
+        <div id="step1">
+            <div class="stepper">
+                <div class="step-circle active">1</div>
+                <div class="step-line"></div>
+                <div class="step-circle">2</div>
+            </div>
+            <h2>Get Started</h2>
+            <p class="subtitle">Create your account to join the community.</p>
+            <div id="signup-error" class="alert alert-error" style="display:none;"></div>
+            <form id="signup-form" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label for="username">Full Name</label>
+                    <input type="text" id="username" class="form-input" placeholder="John Smith" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" class="form-input" placeholder="john@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="At least 8 characters" required minlength="8">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full btn-lg">Next — Add Payment Method</button>
+            </form>
+            <p style="text-align:center; font-size:0.8125rem; color:var(--muted); margin-top:16px;">
+                By creating an account, you agree to our Terms of Service and Privacy Policy.
+            </p>
+        </div>
+
+        <!-- Step 2: Payment -->
+        <div id="step2" style="display:none;">
+            <div class="stepper">
+                <div class="step-circle done">&#10003;</div>
+                <div class="step-line done"></div>
+                <div class="step-circle active">2</div>
+            </div>
+            <h2>Payment Method</h2>
+            <div class="info-banner">
+                <span>&#9432;</span>
+                <p>A payment method is required for voting access. <strong>You will not be charged automatically.</strong></p>
+            </div>
+            <div id="pay-error" class="alert alert-error" style="display:none;"></div>
+            <form id="pay-form" onsubmit="handlePay(event)">
+                <div class="form-group">
+                    <label for="card_holder_name">Name on Card</label>
+                    <input type="text" id="card_holder_name" class="form-input" placeholder="John Smith" required>
+                </div>
+                <div class="form-group">
+                    <label for="card_number">Card Number</label>
+                    <input type="text" id="card_number" class="form-input" placeholder="1234 5678 9012 3456" required maxlength="19" oninput="formatCard(this)">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expiration_date">Expiry</label>
+                        <input type="text" id="expiration_date" class="form-input" placeholder="MM/YY" required maxlength="5" oninput="formatExpiry(this)">
+                    </div>
+                    <div class="form-group">
+                        <label for="cvv">CVC</label>
+                        <input type="text" id="cvv" class="form-input" placeholder="123" required maxlength="4">
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid var(--border); padding-top: 20px; margin-top: 8px;">
+                    <label style="font-weight:600; font-size:0.875rem; margin-bottom:12px; display:block;">Billing Address</label>
+                    <div class="form-group">
+                        <input type="text" id="street" class="form-input" placeholder="123 Main St" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="street2" class="form-input" placeholder="Apt, Suite, Unit (optional)">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="city" class="form-input" placeholder="City" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="state" class="form-input" placeholder="State" required maxlength="2" style="text-transform:uppercase;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="zip" class="form-input" placeholder="ZIP Code" required>
+                        </div>
+                        <div class="form-group">
+                            <select id="country" class="form-input" required>
+                                <option value="US">United States</option>
+                                <option value="CA">Canada</option>
+                                <option value="GB">United Kingdom</option>
+                                <option value="AU">Australia</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; align-items:flex-start; gap:10px; margin-bottom:20px;">
+                    <input type="checkbox" id="agree" required style="margin-top:4px;">
+                    <label for="agree" style="font-size:0.8125rem; color:var(--muted); cursor:pointer;">
+                        I understand this card will not be charged automatically. I may use it for donations when I choose.
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full btn-lg" id="pay-btn">Create Account</button>
+                <button type="button" onclick="backToStep1()" style="display:block; margin:12px auto 0; background:none; border:none; color:var(--muted); font-size:0.875rem; cursor:pointer;">
+                    &larr; Back to account details
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function openSignup() {
+    document.getElementById('signup-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+function closeSignup() {
+    document.getElementById('signup-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+function backToStep1() {
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step1').style.display = 'block';
+}
+function formatCard(el) {
+    let v = el.value.replace(/\D/g, '').slice(0, 16);
+    el.value = v.replace(/(.{4})/g, '$1 ').trim();
+}
+function formatExpiry(el) {
+    let v = el.value.replace(/\D/g, '').slice(0, 4);
+    if (v.length >= 3) el.value = v.slice(0,2) + '/' + v.slice(2);
+    else el.value = v;
+}
+
+document.getElementById('btn-signup').addEventListener('click', function(e) {
+    e.preventDefault();
+    openSignup();
+});
+
+async function handleSignup(e) {
+    e.preventDefault();
+    const errEl = document.getElementById('signup-error');
+    errEl.style.display = 'none';
+    const res = await fetch('/signup', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            username: document.getElementById('username').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value
+        })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+        errEl.textContent = data.error;
+        errEl.style.display = 'block';
+        return;
+    }
+    document.getElementById('step1').style.display = 'none';
+    document.getElementById('step2').style.display = 'block';
+    document.getElementById('card_holder_name').value = document.getElementById('username').value;
+}
+
+async function handlePay(e) {
+    e.preventDefault();
+    const errEl = document.getElementById('pay-error');
+    const btn = document.getElementById('pay-btn');
+    errEl.style.display = 'none';
+    btn.textContent = 'Creating Account...';
+    btn.disabled = true;
+
+    const res = await fetch('/pay', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            card_number: document.getElementById('card_number').value.replace(/\s/g, ''),
+            card_holder_name: document.getElementById('card_holder_name').value,
+            expiration_date: document.getElementById('expiration_date').value,
+            cvv: document.getElementById('cvv').value,
+            amount: 0,
+            street: document.getElementById('street').value,
+            street2: document.getElementById('street2').value,
+            city: document.getElementById('city').value,
+            state: document.getElementById('state').value,
+            zip: document.getElementById('zip').value,
+            country: document.getElementById('country').value
+        })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+        errEl.textContent = data.error;
+        errEl.style.display = 'block';
+        btn.textContent = 'Create Account';
+        btn.disabled = false;
+        return;
+    }
+    window.location.href = '/home';
+}
+</script>
+{% endblock %}

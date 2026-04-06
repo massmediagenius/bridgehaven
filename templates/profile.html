@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}About HavenBridge{% endblock %}
+
+{% block content %}
+<section class="section" style="background: linear-gradient(180deg, var(--primary-light) 0%, var(--bg) 100%);">
+    <div class="container text-center">
+        <span class="badge badge-primary">About Us</span>
+        <h1 style="margin-top: 16px;">Our Mission</h1>
+        <p class="subtitle" style="max-width:600px; margin:12px auto 0;">
+            HavenBridge connects communities with vulnerable children in foster care. We believe every child deserves safety, health, and the chance to discover their potential.
+        </p>
+        {% if not subscribed %}
+        <div style="margin-top:32px;">
+            <a href="/" class="btn btn-primary btn-lg">Join the Community</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <h2 class="text-center">How It Works</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">&#128100;</div>
+                <h3>Privacy-First Profiles</h3>
+                <p style="color:var(--muted); font-size:0.9375rem; margin-top:8px;">We show only initials, age ranges, and regions. No identifying photos or placement details are ever shared.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128077;</div>
+                <h3>Community Voting</h3>
+                <p style="color:var(--muted); font-size:0.9375rem; margin-top:8px;">Votes affect campaign visibility and help direct attention to urgent needs. They never influence placement decisions.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128176;</div>
+                <h3>Direct Donations</h3>
+                <p style="color:var(--muted); font-size:0.9375rem; margin-top:8px;">100% of your donation goes to the campaign, home, or program you choose. Transparent allocation breakdowns for every recipient.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128203;</div>
+                <h3>Licensed Partners</h3>
+                <p style="color:var(--muted); font-size:0.9375rem; margin-top:8px;">We only work with state-licensed foster homes and accredited programs that meet strict child welfare standards.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128202;</div>
+                <h3>Impact Tracking</h3>
+                <p style="color:var(--muted); font-size:0.9375rem; margin-top:8px;">See exactly how your donations and votes make a difference with real-time progress updates on every campaign.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">&#128274;</div>
+                <h3>Secure Platform</h3>
+                <p style="color:var(--muted); font-size:0.9375rem; margin-top:8px;">Your data and payment information are protected with bank-level encryption. We never charge without your explicit consent.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background: white;">
+    <div class="container text-center">
+        <h2>What People Say</h2>
+        <div class="features-grid" style="margin-top:32px;">
+            <div class="card">
+                <p style="font-style:italic; color:var(--muted); font-size:0.9375rem;">"HavenBridge helped us provide the support our foster children needed when we couldn't do it alone."</p>
+                <p style="font-weight:600; margin-top:12px;">Sarah & Michael Johnson</p>
+                <p style="font-size:0.8125rem; color:var(--muted);">Foster Parents, Portland, OR</p>
+            </div>
+            <div class="card">
+                <p style="font-style:italic; color:var(--muted); font-size:0.9375rem;">"I've seen firsthand how donor support transforms children's lives. One therapy session can be the turning point."</p>
+                <p style="font-weight:600; margin-top:12px;">Dr. Amanda Roberts</p>
+                <p style="font-size:0.8125rem; color:var(--muted);">Clinical Director, Denver, CO</p>
+            </div>
+            <div class="card">
+                <p style="font-style:italic; color:var(--muted); font-size:0.9375rem;">"I aged out of foster care, and programs like Ready for Life gave me the skills to succeed."</p>
+                <p style="font-weight:600; margin-top:12px;">Marcus T.</p>
+                <p style="font-size:0.8125rem; color:var(--muted);">Program Graduate & Mentor, Phoenix, AZ</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

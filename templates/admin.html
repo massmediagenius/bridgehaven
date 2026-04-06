@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — HavenBridge{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:40px; padding-bottom:60px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:32px;">
+        <div>
+            <h1 style="font-size:1.75rem;">Admin Dashboard</h1>
+            <p class="subtitle" style="margin-top:4px;">Manage users and transactions</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+            <button onclick="loadData()" class="btn btn-primary" style="padding:8px 20px;">Refresh Data</button>
+            <a href="/" class="btn btn-outline" style="padding:8px 20px;">Exit Admin</a>
+        </div>
+    </div>
+
+    <div class="stats-grid" style="margin-bottom:32px;">
+        <div class="stat-card">
+            <div class="stat-value" id="total-users">-</div>
+            <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="total-transactions">-</div>
+            <div class="stat-label">Transactions</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="total-revenue">-</div>
+            <div class="stat-label">Revenue</div>
+        </div>
+    </div>
+
+    <div class="card" style="overflow-x:auto;">
+        <h3 style="margin-bottom:16px;">Recent Entries (Google Sheets)</h3>
+        <p style="color:var(--muted); font-size:0.875rem; margin-bottom:16px;">
+            Data is synced to your Google Sheet in real-time. Open the sheet directly for full access.
+        </p>
+        <div id="data-area">
+            <p style="color:var(--muted); text-align:center; padding:40px 0;">Click "Refresh Data" to load entries from the sheet.</p>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top:24px;">
+        <h3 style="margin-bottom:12px;">Quick Actions</h3>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <a href="https://docs.google.com/spreadsheets/d/1fCXtneRSfIrYE9n3t5ImPIqlKCB0UtLg9OxfBcF7gm4" target="_blank" class="btn btn-secondary">
+                Open Google Sheet
+            </a>
+            <button onclick="exportCSV()" class="btn btn-outline">Export CSV</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function loadData() {
+    document.getElementById('data-area').innerHTML = '<p style="color:var(--muted); text-align:center; padding:40px 0;">Loading data from Google Sheets...</p>';
+    // In production this would call an admin API endpoint
+    setTimeout(() => {
+        document.getElementById('total-users').textContent = '—';
+        document.getElementById('total-transactions').textContent = '—';
+        document.getElementById('total-revenue').textContent = '—';
+        document.getElementById('data-area').innerHTML = '<p style="color:var(--muted); text-align:center; padding:40px 0;">Connect Google Sheets credentials to view live data here.</p>';
+    }, 1000);
+}
+
+function exportCSV() {
+    window.open('/admin/export-csv', '_blank');
+}
+</script>
+{% endblock %}

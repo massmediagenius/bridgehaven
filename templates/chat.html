@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Community Chat — HavenBridge{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="chat-header">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <h2 style="font-size:1.25rem;">Community Chat</h2>
+                <p style="font-size:0.8125rem; color:var(--muted);">Connected as <strong>{{ username }}</strong></p>
+            </div>
+            <a href="/home" class="btn btn-outline" style="padding:8px 16px; font-size:0.8125rem;">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <div class="chat-messages" id="messages">
+        <div class="message message-received">
+            <p>Welcome to the HavenBridge community chat! Share ideas, ask questions, and connect with other supporters.</p>
+            <div class="message-meta">System &bull; Just now</div>
+        </div>
+    </div>
+
+    <div class="chat-input-area">
+        <input type="text" id="msg-input" class="form-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg()">
+        <button onclick="sendMsg()" class="btn btn-primary">Send</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const username = "{{ username }}";
+const messagesEl = document.getElementById('messages');
+
+function sendMsg() {
+    const input = document.getElementById('msg-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const now = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+    const msg = document.createElement('div');
+    msg.className = 'message message-sent';
+    msg.innerHTML = `<p>${escapeHtml(text)}</p><div class="message-meta">${escapeHtml(username)} &bull; ${now}</div>`;
+    messagesEl.appendChild(msg);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    input.value = '';
+
+    // Simulated reply
+    setTimeout(() => {
+        const replies = [
+            "That's a great point! Thank you for sharing.",
+            "We appreciate your involvement in the community!",
+            "Thanks for your support — every voice matters here.",
+            "Great question! Our team will look into that.",
+            "Your contribution makes a real difference for these children."
+        ];
+        const reply = replies[Math.floor(Math.random() * replies.length)];
+        const rmsg = document.createElement('div');
+        rmsg.className = 'message message-received';
+        const rtime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        rmsg.innerHTML = `<p>${reply}</p><div class="message-meta">HavenBridge Team &bull; ${rtime}</div>`;
+        messagesEl.appendChild(rmsg);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+    }, 1000 + Math.random() * 2000);
+}
+
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+</script>
+{% endblock %}

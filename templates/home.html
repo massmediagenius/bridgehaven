@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — HavenBridge{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 40px; padding-bottom: 60px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px; margin-bottom:32px;">
+        <div>
+            <h1 style="font-size:1.75rem;">Welcome back!</h1>
+            <p class="subtitle" style="margin-top:4px;">Your community dashboard</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+            <a href="/chat" class="btn btn-primary">Open Chat</a>
+            <a href="/me" class="btn btn-outline">My Profile</a>
+        </div>
+    </div>
+
+    <div class="stats-grid" style="margin-bottom:40px;">
+        <div class="stat-card">
+            <div class="stat-value">2,847</div>
+            <div class="stat-label">Children Supported</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">156</div>
+            <div class="stat-label">Homes Funded</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">$4.2M</div>
+            <div class="stat-label">Total Donations</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">89</div>
+            <div class="stat-label">Active Programs</div>
+        </div>
+    </div>
+
+    <h2 style="margin-bottom:20px;">Featured Campaigns</h2>
+    <div class="features-grid" style="margin-top:0;">
+        <div class="card">
+            <span class="badge badge-primary" style="margin-bottom:12px;">Education</span>
+            <h3>Back to School Success</h3>
+            <p style="color:var(--muted); font-size:0.875rem; margin:8px 0 16px;">Equipping foster children with supplies and technology for school.</p>
+            <div class="progress-bar"><div class="progress-fill" style="width:74%;"></div></div>
+            <p style="font-size:0.8125rem; color:var(--muted); margin-top:8px;">$18,500 of $25,000 raised &bull; 412 supporters</p>
+        </div>
+        <div class="card">
+            <span class="badge" style="background:#FEF3C7; color:#D97706;">Critical</span>
+            <h3 style="margin-top:12px;">Therapy Access Fund</h3>
+            <p style="color:var(--muted); font-size:0.875rem; margin:8px 0 16px;">Ensuring every child gets trauma-informed therapy.</p>
+            <div class="progress-bar"><div class="progress-fill" style="width:72%;"></div></div>
+            <p style="font-size:0.8125rem; color:var(--muted); margin-top:8px;">$28,900 of $40,000 raised &bull; 567 supporters</p>
+        </div>
+        <div class="card">
+            <span class="badge" style="background:#FEE2E2; color:#DC2626;">Emergency</span>
+            <h3 style="margin-top:12px;">Emergency Housing Support</h3>
+            <p style="color:var(--muted); font-size:0.875rem; margin:8px 0 16px;">Prevent placement disruptions with emergency funding.</p>
+            <div class="progress-bar"><div class="progress-fill" style="width:65%;"></div></div>
+            <p style="font-size:0.8125rem; color:var(--muted); margin-top:8px;">$19,500 of $30,000 raised &bull; 345 supporters</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
