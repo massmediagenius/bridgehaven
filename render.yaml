@@ -8,7 +8,8 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: SPREADSHEET_ID
-        sync: false
+        value: 1obugfOsxQKUU3q48QezodOQbx26NCoFApOtWkEbiZDY
+        sync: true
       - key: GOOGLE_CREDENTIALS_JSON
         sync: false
       - key: ADMIN_PASSWORD
