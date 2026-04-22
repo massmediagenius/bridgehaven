@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Shield } from 'lucide-react'
-import { ChildProfileCard } from '@/components/cards/child-profile-card'
 import { ChildrenFilters } from '@/components/filters/children-filters'
+import { ChildrenGrid } from '@/components/children/children-grid'
 import { children } from '@/lib/data'
 
 export const metadata: Metadata = {
@@ -13,7 +13,7 @@ export default function ChildrenWeSupportPage() {
   return (
     <div className="pt-20">
       {/* Header */}
-      <section className="bg-muted/30 py-14 sm:py-16">
+      <section className="bg-muted/30 pt-10 pb-6 sm:pt-14 sm:pb-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <h1 className="text-3xl font-bold tracking-tight sm:text-5xl text-balance">
@@ -24,35 +24,53 @@ export default function ChildrenWeSupportPage() {
             </p>
           </div>
 
-          {/* Privacy Notice */}
-          <div className="mt-8 flex items-start gap-3 p-4 rounded-xl bg-primary/5 border border-primary/10 max-w-3xl">
-            <Shield className="size-5 text-primary shrink-0 mt-0.5" />
-            <div>
-              <p className="font-medium text-sm">Privacy-Safe Profiles</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                We show only first names or initials, age ranges, regions, and support needs. No identifying information, photos, or placement details are ever shared publicly. Placement decisions are handled only by licensed caseworkers.
-              </p>
+          {/* Privacy Notice — compact single-line infinite ticker */}
+          <div className="mt-6 relative flex items-center gap-3 h-9 px-3 rounded-full bg-primary/5 border border-primary/10 max-w-3xl overflow-hidden">
+            <Shield className="size-4 text-primary shrink-0 z-10" />
+            <div
+              className="relative flex-1 overflow-hidden"
+              style={{
+                maskImage:
+                  'linear-gradient(to right, transparent, black 8%, black 92%, transparent)',
+                WebkitMaskImage:
+                  'linear-gradient(to right, transparent, black 8%, black 92%, transparent)',
+              }}
+            >
+              <div className="marquee-track flex w-max items-center gap-6 whitespace-nowrap text-xs text-muted-foreground">
+                {[
+                  'Privacy-safe profiles',
+                  'First names or initials only',
+                  'No identifying information shared',
+                  'No placement details public',
+                  'Licensed caseworkers only',
+                  'Trauma-informed care',
+                ].concat([
+                  'Privacy-safe profiles',
+                  'First names or initials only',
+                  'No identifying information shared',
+                  'No placement details public',
+                  'Licensed caseworkers only',
+                  'Trauma-informed care',
+                ]).map((item, i) => (
+                  <span key={i} className="flex items-center gap-6">
+                    <span>{item}</span>
+                    <span className="size-1 rounded-full bg-primary/50" aria-hidden />
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Filters and Listings */}
-      <section className="py-12">
+      <section className="pt-4 pb-12 sm:pt-6">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <ChildrenFilters />
-          
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {children.map((child) => (
-              <ChildProfileCard key={child.id} child={child} />
-            ))}
-          </div>
 
-          {children.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No children match your current filters.</p>
-            </div>
-          )}
+          <div className="mt-6">
+            <ChildrenGrid children={children} />
+          </div>
         </div>
       </section>
     </div>

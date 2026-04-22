@@ -1,5 +1,15 @@
 // HavenBridge Type Definitions
 
+export interface StorySegment {
+  id: string
+  // Short tag/emoji + category label, e.g. "Their beginning"
+  chapter: string
+  // Main body text of this slide
+  body: string
+  // Optional pull-quote or highlight line surfaced above the body
+  pullQuote?: string
+}
+
 export interface Child {
   id: string
   firstName: string
@@ -18,6 +28,7 @@ export interface Child {
   recentUpdates: Update[]
   relatedPrograms: string[]
   activeCampaigns: string[]
+  story?: StorySegment[]
 }
 
 export interface Home {
@@ -101,6 +112,7 @@ export interface Testimonial {
   author: string
   role: string
   location: string
+  image?: string
 }
 
 export interface User {
@@ -152,6 +164,10 @@ export interface ImpactStat {
   label: string
   value: string
   description: string
+  target: number
+  prefix?: string
+  suffix?: string
+  decimals?: number
 }
 
 export interface TrustBadge {

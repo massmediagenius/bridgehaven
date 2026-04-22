@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowRight, CheckCircle2, Users, Heart, TrendingUp, Shield } from 'lucide-react'
+import { ArrowRight, Shield } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Accordion,
@@ -8,38 +8,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import { Typewriter } from '@/components/shared/typewriter'
+import { HowItWorksSteps } from '@/components/sections/how-it-works-steps'
 
 export const metadata: Metadata = {
   title: 'How It Works | HavenBridge',
   description: 'Learn how HavenBridge connects community support with vulnerable children and youth.',
 }
-
-const steps = [
-  {
-    number: '01',
-    icon: Users,
-    title: 'Discover Children & Programs',
-    description: 'Browse privacy-safe profiles of children in foster care and licensed homes, learning about their support needs.',
-  },
-  {
-    number: '02',
-    icon: Heart,
-    title: 'Make Your Voice Heard',
-    description: 'Vote for children and homes you want to support. Votes help prioritize which campaigns and programs get community attention.',
-  },
-  {
-    number: '03',
-    icon: TrendingUp,
-    title: 'Support Through Donations',
-    description: 'Contribute financially to active campaigns that fund education, therapy, essentials, and enrichment programs.',
-  },
-  {
-    number: '04',
-    icon: CheckCircle2,
-    title: 'Track Your Impact',
-    description: 'View your voting history and donation records in your dashboard. See the tangible difference your contributions make.',
-  },
-]
 
 const faqs = [
   {
@@ -71,7 +46,11 @@ export default function HowItWorksPage() {
               How HavenBridge Works
             </h1>
             <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-              We connect your compassion with real children and homes that need support, making your voice count every step of the way.
+              <Typewriter
+                text="We connect your compassion with real children and homes that need support, making your voice count every step of the way."
+                speed={22}
+                startDelay={300}
+              />
             </p>
           </div>
         </div>
@@ -80,23 +59,10 @@ export default function HowItWorksPage() {
       {/* Steps */}
       <section className="py-14 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="text-center mb-10">
             <h2 className="text-3xl font-bold tracking-tight">Four Simple Steps</h2>
           </div>
-          <div className="grid gap-8 sm:grid-cols-2">
-            {steps.map((step) => (
-              <div key={step.number} className="flex gap-5 p-6 rounded-2xl bg-background border border-border shadow-sm">
-                <div className="shrink-0 flex size-12 items-center justify-center rounded-xl bg-primary/10">
-                  <step.icon className="size-6 text-primary" />
-                </div>
-                <div>
-                  <span className="text-xs font-bold text-primary/60 tracking-widest uppercase">Step {step.number}</span>
-                  <h3 className="text-lg font-semibold mt-1 mb-2">{step.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <HowItWorksSteps />
 
           <div className="mt-12 text-center">
             <Button asChild size="lg">

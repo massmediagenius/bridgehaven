@@ -1,35 +1,14 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, Shield, Users, HeartHandshake, BarChart3 } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { OurValuesAccordion } from '@/components/sections/our-values-accordion'
 
 export const metadata: Metadata = {
   title: 'About Us | HavenBridge',
   description: 'Learn about HavenBridge\'s mission to support vulnerable children and youth in foster care.',
 }
-
-const values = [
-  {
-    icon: Shield,
-    title: 'Child Safety First',
-    description: 'Every decision prioritizes the safety, privacy, and well-being of the children we serve. No exceptions.',
-  },
-  {
-    icon: Users,
-    title: 'Community Power',
-    description: 'We believe in the collective wisdom and compassion of communities supporting vulnerable children.',
-  },
-  {
-    icon: BarChart3,
-    title: 'Transparency & Accountability',
-    description: 'We operate with full transparency and are accountable to the children, families, and communities we serve.',
-  },
-  {
-    icon: HeartHandshake,
-    title: 'Trauma-Informed Care',
-    description: 'All partner homes and programs are trained in trauma-informed approaches for sensitive, appropriate care.',
-  },
-]
 
 export default function AboutPage() {
   return (
@@ -79,53 +58,41 @@ export default function AboutPage() {
       {/* Values */}
       <section id="trust-safety" className="py-14 sm:py-20 bg-muted/30">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="text-center mb-10">
             <h2 className="text-3xl font-bold tracking-tight">Our Values</h2>
             <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
               Everything we do is guided by these principles.
             </p>
           </div>
-          <div className="grid gap-6 sm:grid-cols-2">
-            {values.map((value) => (
-              <div key={value.title} className="rounded-2xl bg-background p-6 border border-border shadow-sm">
-                <div className="flex size-11 items-center justify-center rounded-xl bg-primary/10 mb-4">
-                  <value.icon className="size-5 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">{value.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{value.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section className="py-14 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight">Our Impact</h2>
-          </div>
-          <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
-            {[
-              { value: '1,200+', label: 'Children Supported' },
-              { value: '340+', label: 'Partner Homes' },
-              { value: '$2.4M', label: 'Funds Raised' },
-              { value: '18,000+', label: 'Community Votes' },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center p-6 rounded-2xl bg-muted/30 border border-border">
-                <p className="text-3xl font-bold text-primary">{stat.value}</p>
-                <p className="mt-2 text-sm font-medium text-muted-foreground">{stat.label}</p>
-              </div>
-            ))}
-          </div>
+          <OurValuesAccordion />
         </div>
       </section>
 
       {/* CTA */}
-      <section className="py-14 sm:py-20 bg-primary">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-primary-foreground text-balance">Join Our Community</h2>
-          <p className="mt-4 text-primary-foreground/80 max-w-xl mx-auto">
+      <section className="relative py-14 sm:py-20 overflow-hidden bg-primary">
+        {/* Background image */}
+        <Image
+          src="/our-community.jpeg"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+        />
+        {/* Brand-tinted + dark overlays for text contrast */}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-br from-primary/80 via-primary/70 to-slate-900/75"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10"
+        />
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold text-white text-balance drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]">
+            Join Our Community
+          </h2>
+          <p className="mt-4 text-white/90 max-w-xl mx-auto drop-shadow-[0_1px_4px_rgba(0,0,0,0.35)]">
             Be part of something meaningful. Support children and homes that need your voice and compassion.
           </p>
           <Button asChild size="lg" className="mt-8 bg-white text-primary hover:bg-white/90">

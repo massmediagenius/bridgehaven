@@ -195,3 +195,192 @@
     @apply bg-background/80 backdrop-blur-md;
   }
 }
+
+/* Infinite marquee for ImpactStats horizontal scroller */
+@keyframes marquee-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-x-reverse {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.marquee-track {
+  animation: marquee-x 40s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track-reverse {
+  animation: marquee-x-reverse 50s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track:hover,
+.marquee-track-reverse:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .marquee-track-reverse {
+    animation: none;
+  }
+}
+
+/* Trust & Safety accordion — auto-advance progress bar */
+@keyframes trust-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.trust-progress-bar {
+  animation: trust-progress 4s linear forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trust-progress-bar {
+    animation: none;
+  }
+}
+
+/* Typewriter caret — blinks once the text has finished typing */
+@keyframes typewriter-caret-blink {
+  0%, 45% {
+    opacity: 1;
+  }
+  55%, 100% {
+    opacity: 0;
+  }
+}
+
+.typewriter-caret-blink {
+  animation: typewriter-caret-blink 1s steps(1, end) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typewriter-caret-blink {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* Recent donors — staggered fade-in when list expands */
+@keyframes donor-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.donor-fade-in {
+  opacity: 0;
+  animation: donor-fade-in 420ms ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .donor-fade-in {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+}
+
+/* Vote button — outer glow pulse that plays twice on mount (~2s total) */
+@keyframes vote-glow-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 0 rgba(14, 165, 233, 0.55),
+      0 0 0 0 rgba(14, 165, 233, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 0 6px rgba(14, 165, 233, 0),
+      0 0 24px 6px rgba(14, 165, 233, 0.4);
+  }
+}
+
+.vote-glow-once {
+  animation: vote-glow-pulse 1s ease-in-out 2;
+  will-change: box-shadow;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vote-glow-once {
+    animation: none;
+  }
+}
+
+/* "How One Action Helps" icon pulse */
+@keyframes action-icon-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 12px rgba(14, 165, 233, 0);
+  }
+}
+
+.action-icon-pulse {
+  animation: action-icon-pulse 2.4s ease-in-out infinite;
+  will-change: transform, box-shadow;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .action-icon-pulse {
+    animation: none;
+  }
+}
+
+/* Scroll-reveal section entry animation */
+@keyframes section-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(32px) scale(0.985);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.scroll-reveal-hidden {
+  opacity: 0;
+  transform: translateY(32px) scale(0.985);
+  filter: blur(4px);
+}
+
+.scroll-reveal-visible {
+  animation: section-reveal 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal-hidden,
+  .scroll-reveal-visible {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    animation: none;
+  }
+}

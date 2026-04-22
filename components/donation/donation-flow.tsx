@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
-import { Lock, CreditCard, CheckCircle, ChevronLeft, Eye, EyeOff, X, Heart, Shield, ThumbsUp } from 'lucide-react'
+import { Lock, CreditCard, CheckCircle, ChevronLeft, ChevronDown, Eye, EyeOff, X, Heart, Shield, ThumbsUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { useToast } from '@/hooks/use-toast'
@@ -15,13 +15,61 @@ interface Donor {
   date: string
 }
 
-const INITIAL_DONORS: Donor[] = [
-  { name: 'Jennifer M.', amount: 100, isAnonymous: false, date: '2 hours ago' },
-  { name: 'Anonymous', amount: 50, isAnonymous: true, date: '5 hours ago' },
-  { name: 'Robert K.', amount: 250, isAnonymous: false, date: '1 day ago' },
-  { name: 'Sarah & Tom', amount: 75, isAnonymous: false, date: '2 days ago' },
-  { name: 'Anonymous', amount: 25, isAnonymous: true, date: '2 days ago' },
+// Deterministic seed from a string (FNV-1a) — same title always produces the same donors list.
+function hashSeed(s: string): number {
+  let h = 2166136261
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i)
+    h = Math.imul(h, 16777619) >>> 0
+  }
+  return h >>> 0
+}
+
+function makeRng(seed: number) {
+  let state = seed || 1
+  return () => {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0
+    return state / 0x100000000
+  }
+}
+
+const NAME_POOL = [
+  'Jennifer M.', 'Robert K.', 'Sarah & Tom', 'Priya S.', 'David L.',
+  'Emma & Jack', 'Michelle R.', 'James O.', 'Rebecca W.', 'Carlos M.',
+  'Anna B.', 'Thomas G.', 'Leila H.', 'Marcus D.', 'Dr. Park',
+  'The Ellis Family', 'Grace L.', 'Daniel & Kim', 'Aisha F.', 'Ben T.',
+  'The Ortiz Family', 'Tasha M.', 'Evan P.', 'Nora W.', 'Ryan & Dana',
 ]
+
+const TIMES = [
+  '12 min ago', '28 min ago', '45 min ago', '1 hour ago', '2 hours ago',
+  '3 hours ago', '5 hours ago', '7 hours ago', '9 hours ago', '11 hours ago',
+  'Yesterday', '2 days ago', '3 days ago', '4 days ago', '5 days ago',
+  '6 days ago', '1 week ago', '2 weeks ago', '3 weeks ago',
+]
+
+// Unrounded amounts mixed with a few common round ones — feels more real.
+const AMOUNT_POOL = [
+  15, 23, 25, 37, 42, 54, 68, 75, 87, 96,
+  112, 127, 150, 183, 204, 235, 272, 312, 375, 425, 500,
+]
+
+function generateDonors(seed: string, count = 12): Donor[] {
+  const rng = makeRng(hashSeed(seed))
+  const donors: Donor[] = []
+  const usedTimeIdx = new Set<number>()
+  for (let i = 0; i < count; i++) {
+    const isAnonymous = rng() < 0.25
+    const name = isAnonymous ? 'Anonymous' : NAME_POOL[Math.floor(rng() * NAME_POOL.length)]
+    const amount = AMOUNT_POOL[Math.floor(rng() * AMOUNT_POOL.length)]
+    // Pick a unique-ish time index, advancing as we go so the list stays in rough chronological order
+    let timeIdx = Math.min(Math.floor(i * 1.4 + rng() * 2), TIMES.length - 1)
+    while (usedTimeIdx.has(timeIdx) && timeIdx < TIMES.length - 1) timeIdx++
+    usedTimeIdx.add(timeIdx)
+    donors.push({ name, amount, isAnonymous, date: TIMES[timeIdx] })
+  }
+  return donors
+}
 
 interface DonationFlowProps {
   title: string
@@ -54,7 +102,8 @@ export function DonationFlow({
   const [isMonthly, setIsMonthly] = useState(false)
   const [isAnonymous, setIsAnonymous] = useState(false)
   const [donorName, setDonorName] = useState('')
-  const [donors, setDonors] = useState<Donor[]>(INITIAL_DONORS)
+  const initialDonors = useMemo(() => generateDonors(title), [title])
+  const [donors, setDonors] = useState<Donor[]>(initialDonors)
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [hasVoted, setHasVoted] = useState(false)
 
@@ -73,6 +122,8 @@ export function DonationFlow({
       }
     }
   }, [searchParams, showVoteButton, hasVoted, toast, title, pathname])
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Payment fields
   const [cardNumber, setCardNumber] = useState('')
@@ -106,6 +157,7 @@ export function DonationFlow({
 
   async function handlePaymentSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setIsSubmitting(true)
     try {
       const { apiDonate } = await import('@/lib/api')
       await apiDonate({
@@ -124,6 +176,8 @@ export function DonationFlow({
       })
     } catch (err) {
       console.error('API donate failed:', err)
+    } finally {
+      setIsSubmitting(false)
     }
     const newDonor: Donor = {
       name: isAnonymous ? 'Anonymous' : (donorName.trim() || 'A supporter'),
@@ -171,7 +225,7 @@ export function DonationFlow({
         <h3 className="font-semibold text-sm">{title}</h3>
         <div className="mt-3">
           <div className="flex items-center justify-between text-sm mb-1.5">
-            <span className="font-bold text-primary text-lg">${displayRaised.toLocaleString()}</span>
+            <span className="font-bold text-primary text-lg">${displayRaised.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             <span className="text-muted-foreground text-xs">of ${goalAmount.toLocaleString()}</span>
           </div>
           <Progress value={progressPercentage} className="h-2" />
@@ -188,7 +242,7 @@ export function DonationFlow({
           <div>
             <p className="text-sm font-medium mb-3">Select amount</p>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {[25, 50, 100, 250, 500, 1000].map((amt) => (
+              {[25, 50, 100, 250].map((amt) => (
                 <button
                   key={amt}
                   onClick={() => { setSelectedAmount(amt); setCustomAmount('') }}
@@ -243,7 +297,12 @@ export function DonationFlow({
                 You&apos;ve voted — thank you!
               </div>
             ) : (
-              <Button variant="outline" className="w-full" size="lg" onClick={handleVote}>
+              <Button
+                variant="outline"
+                className="vote-glow-once w-full border-primary/50 text-primary hover:bg-primary/5 hover:text-primary hover:border-primary"
+                size="lg"
+                onClick={handleVote}
+              >
                 <ThumbsUp className="size-4 mr-2" />
                 {voteLabel}
               </Button>
@@ -434,9 +493,21 @@ export function DonationFlow({
             )}
           </div>
 
-          <Button type="submit" className="w-full" size="lg">
-            <Lock className="size-4 mr-2" />
-            Donate ${finalAmount}{isMonthly ? '/month' : ' Securely'}
+          <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <svg className="size-4 mr-2 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Processing...
+              </>
+            ) : (
+              <>
+                <Lock className="size-4 mr-2" />
+                Donate ${finalAmount}{isMonthly ? '/month' : ' Securely'}
+              </>
+            )}
           </Button>
 
           <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1.5">
@@ -471,7 +542,7 @@ export function DonationFlow({
           {/* Updated Progress */}
           <div className="mb-5 p-4 rounded-xl border border-border">
             <div className="flex items-center justify-between text-sm mb-1.5">
-              <span className="font-bold text-primary">${displayRaised.toLocaleString()}</span>
+              <span className="font-bold text-primary">${displayRaised.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               <span className="text-muted-foreground text-xs">of ${goalAmount.toLocaleString()}</span>
             </div>
             <Progress value={progressPercentage} className="h-2.5" />
@@ -492,28 +563,67 @@ export function DonationFlow({
 }
 
 function RecentDonors({ donors, highlight = false }: { donors: Donor[]; highlight?: boolean }) {
+  const [isOpen, setIsOpen] = useState(false)
+  // Key changes each time the panel re-opens so the stagger animation replays.
+  const [openKey, setOpenKey] = useState(0)
+
+  const toggle = () => {
+    setIsOpen((v) => {
+      const next = !v
+      if (next) setOpenKey((k) => k + 1)
+      return next
+    })
+  }
+
   return (
     <div className={cn('rounded-xl border border-border overflow-hidden', highlight && 'border-primary/20')}>
-      <div className="px-4 py-2.5 bg-muted/40 border-b border-border flex items-center gap-2">
+      <button
+        type="button"
+        onClick={toggle}
+        aria-expanded={isOpen}
+        aria-controls="recent-donors-list"
+        className="w-full px-4 py-2.5 bg-muted/40 border-b border-border flex items-center gap-2 hover:bg-muted/60 transition-colors"
+      >
         <Heart className="size-3.5 text-primary" />
-        <span className="text-xs font-semibold">Recent Donors</span>
-      </div>
-      <ul className="divide-y divide-border">
-        {donors.slice(0, 5).map((donor, i) => (
-          <li key={i} className={cn('flex items-center justify-between px-4 py-2.5', i === 0 && highlight && 'bg-primary/5')}>
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-semibold">
-                {donor.isAnonymous ? '?' : donor.name.charAt(0).toUpperCase()}
+        <span className="text-xs font-semibold flex-1 text-left">Recent Donors</span>
+        <span className="text-xs text-muted-foreground">{donors.length}+ supporters</span>
+        <ChevronDown
+          className={cn(
+            'size-4 text-muted-foreground transition-transform duration-300',
+            isOpen && 'rotate-180'
+          )}
+        />
+      </button>
+
+      {isOpen && (
+        <ul
+          id="recent-donors-list"
+          key={openKey}
+          className="divide-y divide-border max-h-80 overflow-y-auto"
+        >
+          {donors.map((donor, i) => (
+            <li
+              key={`${openKey}-${i}`}
+              className={cn(
+                'donor-fade-in flex items-center justify-between px-4 py-2.5',
+                i === 0 && highlight && 'bg-primary/5'
+              )}
+              style={{ animationDelay: `${Math.min(i * 50, 600)}ms` }}
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-semibold">
+                  {donor.isAnonymous ? '?' : donor.name.charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium truncate">{donor.name}</p>
+                  <p className="text-xs text-muted-foreground">{donor.date}</p>
+                </div>
               </div>
-              <div className="min-w-0">
-                <p className="text-sm font-medium truncate">{donor.name}</p>
-                <p className="text-xs text-muted-foreground">{donor.date}</p>
-              </div>
-            </div>
-            <span className="text-sm font-semibold text-primary shrink-0 ml-2">${donor.amount}</span>
-          </li>
-        ))}
-      </ul>
+              <span className="text-sm font-semibold text-primary shrink-0 ml-2">${donor.amount}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

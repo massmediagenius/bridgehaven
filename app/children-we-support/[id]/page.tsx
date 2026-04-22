@@ -3,20 +3,13 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import {
-  ArrowLeft,
-  MapPin,
-  Shield,
-  Sparkles,
-  Target,
-  Calendar
-} from 'lucide-react'
+import { ArrowLeft, MapPin, Shield } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getChildById, programs, campaigns } from '@/lib/data'
+import { getChildById } from '@/lib/data'
 import { DonationFlow } from '@/components/donation/donation-flow'
+import { ChildInfoTabs } from '@/components/children/child-info-tabs'
+import { ChildStoryCarousel } from '@/components/children/child-story-carousel'
 
 type Params = Promise<{ id: string }>
 
@@ -53,8 +46,6 @@ export default async function ChildProfilePage({ params }: { params: Params }) {
   }
 
   const progressPercentage = Math.round((child.fundsRaised / child.fundingGoal) * 100)
-  const relatedPrograms = programs.filter(p => child.relatedPrograms.includes(p.id))
-  const activeCampaigns = campaigns.filter(c => child.activeCampaigns.includes(c.id))
 
   return (
     <div className="pt-20 pb-16">
@@ -69,10 +60,9 @@ export default async function ChildProfilePage({ params }: { params: Params }) {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-3">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8 order-2 lg:order-1">
-            {/* Profile Header */}
+        <div className="flex flex-col gap-8 lg:grid lg:grid-cols-3">
+          {/* Profile Header — always on top on mobile, top-left on desktop */}
+          <div className="order-1 lg:col-span-2 lg:col-start-1 lg:row-start-1">
             <div className="rounded-2xl bg-background p-8 shadow-sm border border-border">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex items-center gap-4">
@@ -105,158 +95,63 @@ export default async function ChildProfilePage({ params }: { params: Params }) {
                 </Badge>
               </div>
 
-              {/* Privacy Notice */}
-              <div className="flex items-start gap-3 p-4 rounded-xl bg-primary/5 border border-primary/10 mb-6">
-                <Shield className="size-5 text-primary shrink-0 mt-0.5" />
-                <p className="text-sm text-muted-foreground">
-                  This is a privacy-safe profile. Placement decisions are made only by licensed caseworkers and child welfare professionals.
-                </p>
+              {/* Privacy Notice — compact single-line infinite ticker */}
+              <div className="relative flex items-center gap-3 h-9 px-3 rounded-full bg-primary/5 border border-primary/10 mb-6 overflow-hidden">
+                <Shield className="size-4 text-primary shrink-0 z-10" />
+                <div
+                  className="relative flex-1 overflow-hidden"
+                  style={{
+                    maskImage:
+                      'linear-gradient(to right, transparent, black 8%, black 92%, transparent)',
+                    WebkitMaskImage:
+                      'linear-gradient(to right, transparent, black 8%, black 92%, transparent)',
+                  }}
+                >
+                  <div className="marquee-track flex w-max items-center gap-6 whitespace-nowrap text-xs text-muted-foreground">
+                    {[
+                      'Privacy-safe profile',
+                      'Licensed caseworkers only',
+                      'No identifying information shared',
+                      'Trauma-informed care',
+                      'Placements handled by professionals',
+                      'Verified partner homes',
+                    ].concat([
+                      'Privacy-safe profile',
+                      'Licensed caseworkers only',
+                      'No identifying information shared',
+                      'Trauma-informed care',
+                      'Placements handled by professionals',
+                      'Verified partner homes',
+                    ]).map((item, i) => (
+                      <span key={i} className="flex items-center gap-6">
+                        <span>{item}</span>
+                        <span className="size-1 rounded-full bg-primary/50" aria-hidden />
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <p className="text-muted-foreground">{child.supportSummary}</p>
             </div>
-
-            {/* Support Needs */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="size-5 text-primary" />
-                  Current Support Needs
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {child.needs.map((need) => (
-                    <Badge key={need} variant="secondary" className="text-sm py-1.5 px-3">
-                      {need}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Goals & Talents */}
-            <div className="grid gap-6 sm:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="size-5 text-primary" />
-                    Goals
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {child.goals.map((goal) => (
-                      <li key={goal} className="flex items-start gap-2 text-sm">
-                        <span className="size-1.5 rounded-full bg-primary mt-2 shrink-0" />
-                        {goal}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="size-5 text-primary" />
-                    Talents & Interests
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {child.talents.map((talent) => (
-                      <li key={talent} className="flex items-start gap-2 text-sm">
-                        <span className="size-1.5 rounded-full bg-primary mt-2 shrink-0" />
-                        {talent}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Recent Updates */}
-            {child.recentUpdates.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="size-5 text-primary" />
-                    Recent Updates
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {child.recentUpdates.map((update) => (
-                      <div key={update.id} className="border-l-2 border-primary/30 pl-4">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                          <span>{new Date(update.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                        </div>
-                        <h4 className="font-medium">{update.title}</h4>
-                        <p className="text-sm text-muted-foreground">{update.content}</p>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Related Programs */}
-            {relatedPrograms.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Related Programs</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {relatedPrograms.map((program) => (
-                      <Link 
-                        key={program.id} 
-                        href={`/homes-programs/${program.id}`}
-                        className="block p-4 rounded-xl border border-border hover:bg-muted/50 transition-colors"
-                      >
-                        <h4 className="font-medium">{program.name}</h4>
-                        <p className="text-sm text-muted-foreground mt-1">{program.mission}</p>
-                      </Link>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Active Campaigns */}
-            {activeCampaigns.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Active Campaigns Benefiting {child.firstName}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {activeCampaigns.map((campaign) => (
-                      <Link 
-                        key={campaign.id} 
-                        href={`/campaigns/${campaign.id}`}
-                        className="block p-4 rounded-xl border border-border hover:bg-muted/50 transition-colors"
-                      >
-                        <h4 className="font-medium">{campaign.title}</h4>
-                        <div className="mt-2">
-                          <div className="flex items-center justify-between text-sm mb-1">
-                            <span className="text-primary font-medium">${campaign.amountRaised.toLocaleString()}</span>
-                            <span className="text-muted-foreground">of ${campaign.goalAmount.toLocaleString()}</span>
-                          </div>
-                          <Progress value={Math.round((campaign.amountRaised / campaign.goalAmount) * 100)} className="h-1.5" />
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6 order-1 lg:order-2">
-            <div className="sticky top-24">
+          {/* Rest of main content — story carousel + segmented tab switcher */}
+          <div className="order-3 lg:order-none lg:col-span-2 lg:col-start-1 lg:row-start-2 space-y-8">
+            {child.story && child.story.length > 0 && (
+              <ChildStoryCarousel firstName={child.firstName} story={child.story} />
+            )}
+            <ChildInfoTabs
+              needs={child.needs}
+              goals={child.goals}
+              talents={child.talents}
+              recentUpdates={child.recentUpdates}
+            />
+          </div>
+
+          {/* Sidebar — directly under profile on mobile, sticky right column on desktop */}
+          <div className="order-2 space-y-6 lg:order-none lg:col-start-3 lg:row-start-1 lg:row-span-2">
+            <div className="lg:sticky lg:top-24">
               <Suspense>
                 <DonationFlow
                   title={`Support ${child.firstName}'s Needs`}

@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
-import { Mail, Phone, MapPin } from 'lucide-react'
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -53,37 +52,10 @@ export default function ContactPage() {
 
       {/* Content */}
       <section className="py-14 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-3 lg:gap-12">
-            {/* Contact Info */}
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold mb-6">Contact Information</h2>
-              {[
-                { icon: Mail, label: 'Email', value: 'support@havenbridge.org', href: 'mailto:support@havenbridge.org' },
-                { icon: Phone, label: 'Phone', value: '1-800-HAVEN-BR', href: 'tel:1-800-HAVEN-BR' },
-                { icon: MapPin, label: 'Address', value: '123 Hope Street\nPhoenix, AZ 85001', href: null },
-              ].map((item) => (
-                <div key={item.label} className="flex items-start gap-4 p-5 rounded-2xl bg-background border border-border shadow-sm">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                    <item.icon className="size-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium mb-0.5">{item.label}</p>
-                    {item.href ? (
-                      <a href={item.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                        {item.value}
-                      </a>
-                    ) : (
-                      <p className="text-sm text-muted-foreground whitespace-pre-line">{item.value}</p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Contact Form */}
-            <div className="lg:col-span-2">
-              <Card className="border-border shadow-sm">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          {/* Contact Form */}
+          <div>
+            <Card className="border-border shadow-sm">
                 <CardHeader>
                   <CardTitle>Send us a Message</CardTitle>
                   <CardDescription>We respond within 24 hours on business days.</CardDescription>
@@ -148,7 +120,6 @@ export default function ContactPage() {
                   </form>
                 </CardContent>
               </Card>
-            </div>
           </div>
         </div>
       </section>

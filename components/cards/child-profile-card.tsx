@@ -92,7 +92,7 @@ export function ChildProfileCard({ child }: ChildProfileCardProps) {
         <div className="flex items-center gap-2">
           <Heart className="size-4 text-muted-foreground" />
           <span className="text-sm">
-            <span className="font-medium">${child.fundsRaised.toLocaleString()}</span>
+            <span className="font-medium">${child.fundsRaised.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             <span className="text-muted-foreground"> raised</span>
           </span>
         </div>

@@ -1,7 +1,4 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import {
   Accordion,
   AccordionContent,
@@ -90,20 +87,6 @@ export default function FAQPage() {
                 </AccordionItem>
               ))}
             </Accordion>
-          </div>
-
-          {/* Contact CTA */}
-          <div className="mt-12 rounded-2xl bg-primary/5 border border-primary/10 p-8 text-center">
-            <h2 className="text-xl font-bold mb-2">Didn&apos;t find your answer?</h2>
-            <p className="text-muted-foreground mb-6 text-sm">
-              Get in touch with our support team — we&apos;re happy to help.
-            </p>
-            <Button asChild>
-              <Link href="/contact">
-                Contact Us
-                <ArrowRight className="size-4 ml-2" />
-              </Link>
-            </Button>
           </div>
         </div>
       </section>
