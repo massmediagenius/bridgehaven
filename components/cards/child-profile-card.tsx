@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import type { Child } from '@/lib/types'
+import { childSlug } from '@/lib/data'
 
 interface ChildProfileCardProps {
   child: Child
@@ -107,7 +108,7 @@ export function ChildProfileCard({ child }: ChildProfileCardProps) {
       </div>
 
       <Button asChild className="w-full">
-        <Link href={`/children-we-support/${child.id}`}>Support This Child&apos;s Needs</Link>
+        <Link href={`/children-we-support/${childSlug(child)}`}>Support This Child&apos;s Needs</Link>
       </Button>
     </div>
   )

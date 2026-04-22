@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
+import { childSlug } from '@/lib/data'
 import type { Child } from '@/lib/types'
 
 interface ChildProfileCardCompactProps {
@@ -24,7 +25,7 @@ const urgencyLabels = {
 export function ChildProfileCardCompact({ child }: ChildProfileCardCompactProps) {
   return (
     <Link
-      href={`/children-we-support/${child.id}`}
+      href={`/children-we-support/${childSlug(child)}`}
       className="group block rounded-xl bg-background border border-border shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 overflow-hidden"
     >
       <div className="relative aspect-square w-full">

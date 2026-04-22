@@ -6,21 +6,48 @@ import { notFound } from 'next/navigation'
 import { ArrowLeft, MapPin, Shield } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { getChildById } from '@/lib/data'
+import { getChildBySlug, children, childSlug } from '@/lib/data'
 import { DonationFlow } from '@/components/donation/donation-flow'
 import { ChildInfoTabs } from '@/components/children/child-info-tabs'
 import { ChildStoryCarousel } from '@/components/children/child-story-carousel'
 
-type Params = Promise<{ id: string }>
+type Params = Promise<{ slug: string }>
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const { id } = await params
-  const child = getChildById(id)
+  const { slug } = await params
+  const child = getChildBySlug(slug)
   if (!child) return { title: 'Child Not Found' }
+
+  const title = `Support ${child.firstName}`
+  const description = `Support ${child.firstName}'s needs: ${child.needs.join(', ')}`
+  const image = child.image || '/logo.png'
+
   return {
-    title: `Support ${child.firstName}`,
-    description: `Support ${child.firstName}'s needs: ${child.needs.join(', ')}`,
+    title,
+    description,
+    openGraph: {
+      type: 'profile',
+      title,
+      description,
+      images: [
+        {
+          url: image,
+          alt: `${child.firstName}'s profile`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [image],
+    },
   }
+}
+
+// Pre-render all child pages at build time using first-name slugs.
+export function generateStaticParams() {
+  return children.map((child) => ({ slug: childSlug(child) }))
 }
 
 const urgencyColors = {
@@ -38,8 +65,8 @@ const urgencyLabels = {
 }
 
 export default async function ChildProfilePage({ params }: { params: Params }) {
-  const { id } = await params
-  const child = getChildById(id)
+  const { slug } = await params
+  const child = getChildBySlug(slug)
 
   if (!child) {
     notFound()

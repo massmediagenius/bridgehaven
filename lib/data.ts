@@ -1225,6 +1225,23 @@ export function getChildById(id: string): Child | undefined {
   return children.find(c => c.id === id)
 }
 
+// Derive a URL slug from a child's first name (lowercased, stripped).
+// All current first names are unique — if a collision is ever introduced,
+// disambiguate by appending the child's numeric id suffix.
+export function childSlug(child: Child): string {
+  return child.firstName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
+export function getChildBySlug(slug: string): Child | undefined {
+  const normalized = slug.toLowerCase()
+  // First try exact slug match (pretty URLs), then fall back to id for
+  // backward compatibility with any /child-N links that still exist.
+  return (
+    children.find(c => childSlug(c) === normalized) ||
+    children.find(c => c.id === normalized)
+  )
+}
+
 export function getHomeById(id: string): Home | undefined {
   return homes.find(h => h.id === id)
 }

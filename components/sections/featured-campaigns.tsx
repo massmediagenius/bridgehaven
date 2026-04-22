@@ -7,7 +7,7 @@ import { ArrowRight, ChevronLeft, ChevronRight, ThumbsUp, Heart } from 'lucide-r
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { getTopChildren } from '@/lib/data'
+import { getTopChildren, childSlug } from '@/lib/data'
 import type { Child } from '@/lib/types'
 
 const urgencyColors = {
@@ -92,7 +92,7 @@ function ChildCampaignCard({ child }: { child: Child }) {
           </div>
 
           <Button asChild size="sm" className="w-full">
-            <Link href={`/children-we-support/${child.id}`}>Support {child.firstName}</Link>
+            <Link href={`/children-we-support/${childSlug(child)}`}>Support {child.firstName}</Link>
           </Button>
         </div>
       </div>

@@ -10,7 +10,15 @@ import './globals.css'
 const _geist = Geist({ subsets: ['latin'] })
 const _geistMono = Geist_Mono({ subsets: ['latin'] })
 
+// Absolute base for all social/OG image URLs. In production, set
+// NEXT_PUBLIC_SITE_URL to your deployed domain (e.g. https://havenbridge.org).
+// Locally we fall back to the dev server so previews don't break.
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'HavenBridge - Bridge Children to Safety',
     template: '%s | HavenBridge',
